@@ -41,9 +41,12 @@ def report(distribution=populations.gauss,
     for (label, nums) in [('start', results[0]), ('mid', results[len(results)//2]), ('final', results[-1])]:
         print fmt.format(label, *nums)
     # Plot results
+    col = 0.75
     for line in zip(*results):
-        normaline = [l/line[0] for l in line]
-        plt.plot(normaline)
+        normaline = [x/line[0] for x in line]
+        plt.plot(normaline, color=str(col))
+        col *= 0.75
+        # lighter is richer
     plt.show()
 
 
