@@ -44,8 +44,8 @@ def normalize(numbers, total):
 
 def random_agent(mu_e1=mu, mu_e2=mu, sigma_e1=mu/3, sigma_e2=mu/3, 
                  mu_p1=0.5, mu_p2=0.5, width_p1=0.5, width_p2=0.5):
-    e1 = gauss(mu_e1, sigma_e1)
-    e2 = gauss(mu_e2, sigma_e2)
+    e1 = max(0, gauss(mu_e1, sigma_e1))
+    e2 = max(0, gauss(mu_e2, sigma_e2))
     p1 = uniform(mu_p1, width_p1)
     p2 = uniform(mu_p2, width_p2)
     return agent(e1, e2, p1, p2)
@@ -57,7 +57,7 @@ class agent(object):
         Agents are characterized by their allocations and preferences
         of goods 1 and 2. Economists usually call the starting value of
         a good an "endowment".
-        The variables preference1 and preference2 should be between 0 and 1.
+        The preference variables should be between 0 and 1.
         '''
         self.good1 = max(0, endowment1)
         self.good2 = max(0, endowment2)
@@ -71,18 +71,17 @@ class agent(object):
         '''
         return pow(self.good1, self.pref1) * pow(self.good2, self.pref2)
 
-    # I have a sweet tooth for syntactic sugar.
+    # The allocation property is just syntactic sugar that lets us assign
+    # allocations using tuples a little more cleanly.
     @property
-    def allocation(self):
-        return (self.good1, self.good2)
-    
-    @allocation.setter
-    def allocation(self, values):
-        self.good1 = values[0]
-        self.good2 = values[1]
+    def allocation(self): return (self.good1, self.good2)
 
-    # We need to make comparisons in order to sort the agents based on utility.
-    # I always prefer to define all of them if I need to define any.
+    @allocation.setter
+    def allocation(self, values): self.good1, self.good2 = values
+
+    # We need to define comparison operators in order to sort the
+    # agents based on utility. I always prefer to define all of them
+    # if I need to define any.
     def __gt__(self, other): return self.utility > other
     def __lt__(self, other): return self.utility < other
     def __eq__(self, other): return self.utility == other

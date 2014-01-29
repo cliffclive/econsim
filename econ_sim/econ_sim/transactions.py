@@ -62,5 +62,3 @@ def edgeworth_trade(X, Y):
     allocation_y2 = total_2 - allocation_x2
     
     return (allocation_x1, allocation_x2), (allocation_y1, allocation_y2)
-                       
-    
