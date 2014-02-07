@@ -1,0 +1,46 @@
+Where to go from here?
+
+Before building more models (production and consumption, yeah!), let's squeeze a little
+more insight out of this one.
+
+
+BARGAINING POWER
+
+First, I want to see what happens when we DON'T look for a competitive equilibrium.
+What if one agent is able to persuade the other one to accept a suboptimal deal?
+We'll assume that they negotiate to a point on the contract curve between their initial
+utility curves, so no one is made worse off (although it wouldn't be hard to relax this
+assumption). If we use Cobb-Douglas utility with preferences (0.5, 0.5) for all agents,
+the contract curve is simply X=Y. (what if total X != total Y?) So the competitive
+equilibrium is:
+
+    X1' = mean(X1, X2)
+    X2' = X_total - X1'
+
+    Y1' = X1'
+    Y2' = Y_total - Y1'
+
+What if, instead of splitting the difference, each agent gets a charisma score (or a
+charisma distribution)? Then we calculate the relative influence of each agent as the
+proportion of their charisma out of the sum of the two charisma scores. Each agent in
+turn receives that proportion of the economic surplus.
+
+We trade this way, and then when we simulate we can look at how utility evolves over
+time for people with various charisma scores.
+
+
+IMPERFECT INFORMATION
+
+Suppose agents don't know their own utility functions, but they do know if they like a
+proposed allocation more than what they currently have. Let's say they even know what
+their preference parameters are; they just don't know the form of their utility function.
+In this economy, agent 1 can make an offer that agent 2 can accept or reject. Can we
+use neural networks to train agents how to make good trades?
+
+How would we define the cost function for that network?
+
+Say for a given trade, agent 1 can see the allocations and preference parameters of both
+agents, and make an offer to agent 2. If agent 2 accepts, they make a trade. After the
+deal (whether it succeeds or fails to go through), we calculate the error as
+    ? delta(Utility1)
+    ? delta(Utility2) - delta(Utility1)
