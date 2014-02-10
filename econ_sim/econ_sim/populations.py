@@ -50,6 +50,16 @@ def random_agent(mu_e1=mu, mu_e2=mu, sigma_e1=mu/3, sigma_e2=mu/3,
     p2 = uniform(mu_p2, width_p2)
     return agent(e1, e2, p1, p2)
 
+def random_charismatic_agent(mu_e1=mu, mu_e2=mu, sigma_e1=mu/3, sigma_e2=mu/3,
+                             mu_p1=0.5, mu_p2=0.5, width_p1=0.5, width_p2=0.5,
+                             mu_ch=0.5, width_ch = 0.5):
+    e1 = max(0, gauss(mu_e1, sigma_e1))
+    e2 = max(0, gauss(mu_e2, sigma_e2))
+    p1 = uniform(mu_p1, width_p1)
+    p2 = uniform(mu_p2, width_p2)
+    ch = uniform(mu_ch, width_ch)
+    return charismatic_agent(e1, e2, p1, p2, ch)
+
 
 class agent(object):
     def __init__(self, endowment1, endowment2, preference1, preference2):
@@ -98,3 +108,19 @@ class agent(object):
     
     def __radd__(self, other):
         return other + self.good1 + self.good2
+
+
+class charismatic_agent(agent):
+    def __init__(self, endowment1, endowment2, preference1, preference2, cha):
+        agent.__init__(endowment1, endowment2, preference1, preference2)
+        self.charisma = cha
+
+    # We need to define comparison operators in order to sort the
+    # agents based on charisma. I always prefer to define all of them
+    # if I need to define any.
+    def __gt__(self, other): return self.charisma > other
+    def __lt__(self, other): return self.charisma < other
+    def __eq__(self, other): return self.charisma == other
+    def __ge__(self, other): return self.charisma >= other
+    def __le__(self, other): return self.charisma <= other
+    def __ne__(self, other): return self.charisma != other

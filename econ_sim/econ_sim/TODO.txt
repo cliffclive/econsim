@@ -9,21 +9,33 @@ BARGAINING POWER
 First, I want to see what happens when we DON'T look for a competitive equilibrium.
 What if one agent is able to persuade the other one to accept a suboptimal deal?
 We'll assume that they negotiate to a point on the contract curve between their initial
-utility curves, so no one is made worse off (although it wouldn't be hard to relax this
-assumption). If we use Cobb-Douglas utility with preferences (0.5, 0.5) for all agents,
-the contract curve is simply X=Y. (what if total X != total Y?) So the competitive
-equilibrium is:
+utility curves, so no one is made worse off than their starting point (although it
+wouldn't be hard to relax this assumption). If we use Cobb-Douglas utility with
+preferences (0.5, 0.5) for all agents, the contract curve is simply:
+    (Y_total / X_total) * X = Y.
 
-    X1' = mean(X1, X2)
-    X2' = X_total - X1'
+Now, from their starting points, U1 = U(X1, Y1) and U2 = U(X2, Y2). The minimum amounts
+of good X that the agents will accept are those where the contract curve intersects the
+initial indifference curves:
+    (X1')^0.5 * ((Y_t/X_t)*X1')^0.5 = U1 = X1^0.5 * Y1^0.5
+    X1' * (Yt/Xt)*X1' = X1 * Y1
+    (X1')^2 = (X1 * Y1) / (Yt / Xt) = X1 * Y1 * Xt / Yt
 
-    Y1' = X1'
-    Y2' = Y_total - Y1'
+     X1' = sqrt(X1 * Y1 * Xt / Yt)
+     X2' = sqrt(X2 * Y2 * Xt / Yt)
+
+So the competitive equilibrium is:
+
+    X1" = mean(X1, X2)
+    X2" = X_total - X1"
+    Y1" = (Y_total / X_total) * X1"
+    Y2" = Y_total - Y1"
 
 What if, instead of splitting the difference, each agent gets a charisma score (or a
 charisma distribution)? Then we calculate the relative influence of each agent as the
-proportion of their charisma out of the sum of the two charisma scores. Each agent in
-turn receives that proportion of the economic surplus.
+proportion of their charisma out of the sum of the two charisma scores. To find the
+equilibrium, we move along the contract curve between the two indifference curves, up
+to the proportion of the arc length given by the charisma ratio.
 
 We trade this way, and then when we simulate we can look at how utility evolves over
 time for people with various charisma scores.
