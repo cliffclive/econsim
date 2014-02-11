@@ -28,8 +28,9 @@ def report(distribution=populations.gauss,
            transaction_fn=transactions.random_split, 
            interaction_fn=interactions.anyone, 
            N=populations.N, mu=populations.mu, T=5*populations.N, 
-           percentiles=(1, 10, 25, 33.3, 50, -33.3, -25, -10, -1), record_every=25):
-    "Print and plot the results of the simulation running T steps." 
+           #percentiles=(1, 10, 25, 33.3, 50, -33.3, -25, -10, -1), record_every=25):
+           percentiles=(1, 25, 50, -25, -1), record_every=25):
+    "Print and plot the results of the simulation running T steps."
     # Run simulation
     population = populations.sample(distribution, N, mu)
     results = simulate(population, transaction_fn, interaction_fn, T, percentiles, record_every)

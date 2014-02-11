@@ -5,6 +5,7 @@ Created on Jan 22, 2014
 '''
 
 import random
+import math
 
 
 def random_split(X, Y):
@@ -39,7 +40,7 @@ def split_half_min(X, Y):
     return X - pot/2. + m, Y + pot/2. - m
 
 
-def edgeworth_trade(X, Y):
+def cobb_douglas_competitive_eqbm(X, Y):
     # Useful constants for the following calculations
     alphaX = X.pref1 / (X.pref1 + X.pref2)
     betaX  = X.pref2 / (X.pref1 + X.pref2)
@@ -62,3 +63,21 @@ def edgeworth_trade(X, Y):
     allocation_y2 = total_2 - allocation_x2
     
     return (allocation_x1, allocation_x2), (allocation_y1, allocation_y2)
+
+
+def cobb_douglas_negotiation(agentX, agentY):
+    total_1 = agentX.good1 + agentY.good1
+    total_2 = agentX.good2 + agentY.good2
+    min_good1_x = math.sqrt(agentX.good1 * agentX.good2 * total_1 / total_2)
+    min_good1_y = math.sqrt(agentY.good1 * agentY.good2 * total_1 / total_2)
+    max_good1_x = total_1 - min_good1_y
+    bargaining_power_x = agentX.charisma / (agentX.charisma + agentY.charisma)
+
+    allocation_x1 = min_good1_x + bargaining_power_x * (max_good1_x - min_good1_x)
+    allocation_y1 = total_1 - allocation_x1
+    allocation_x2 = (total_2 / total_1) * allocation_x1
+    allocation_y2 = total_2 - allocation_x2
+
+    return (allocation_x1, allocation_x2), (allocation_y1, allocation_y2)
+
+

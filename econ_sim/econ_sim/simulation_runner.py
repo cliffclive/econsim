@@ -15,16 +15,16 @@ if __name__ == '__main__':
                       transactions.random_split, 
                       interactions.anyone)
     """
-    
-    X = populations.agent(3, 5, 0.25, 0.75)
-    Y = populations.agent(2, 4, 0.33, 0.67)
+    '''
+    X = populations.Agent(3, 5, 0.25, 0.75)
+    Y = populations.Agent(2, 4, 0.33, 0.67)
     
     print 'X has ', X.allocation
     print 'U(X): ', X.utility
     print 'Y has ', Y.allocation
     print 'U(Y): ', Y.utility
     
-    allocX, allocY = transactions.edgeworth_trade(X, Y)
+    allocX, allocY = transactions.cobb_douglas_competitive_eqbm(X, Y)
     
     print 'X gets ', allocX
     print 'Y gets ', allocY
@@ -37,7 +37,13 @@ if __name__ == '__main__':
     print 'Y has ', Y.allocation
     print 'U(Y): ', Y.utility
     print '-' * 80
-    
+    '''
+    '''
     simulation.report(populations.random_agent,
-                      transactions.edgeworth_trade,
+                      transactions.cobb_douglas_competitive_eqbm,
                       interactions.anyone)
+    '''
+    simulation.report(populations.random_charismatic_agent,
+                      transactions.cobb_douglas_negotiation,
+                      interactions.anyone)
+                      #T=20*populations.N)
