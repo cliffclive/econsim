@@ -52,27 +52,30 @@ def cobb_douglas_competitive_eqbm(X, Y):
     # Equilibrium price of good 1 relative to good 2
     price = (X.good2 * alphaX + Y.good2 * alphaY) / (X.good1 * betaX + Y.good1 * betaY)
 
-    # Allocation of good 1, following from demand function and market clearing conditions
-    allocation_x1 = alphaX * (price * X.good1 + X.good2) / price 
-    allocation_x1 = min(total_1 - 0.0001, max(0.0001, allocation_x1)) 
-    allocation_y1 = total_1 - allocation_x1
-    
-    # Allocation of good 2, following from budget constraint and market clearing conditions
-    allocation_x2 = price * allocation_x1 * X.pref2 / X.pref1 
-    allocation_x2 = min(total_2 - 0.0001, max(0.0001, allocation_x2)) 
-    allocation_y2 = total_2 - allocation_x2
-    
-    return (allocation_x1, allocation_x2), (allocation_y1, allocation_y2)
+    allocation_x = X.demand(price)
+    allocation_y = (total_1 - allocation_x[0], total_2 - allocation_x[1])
+
+    return (allocation_x, allocation_y)
 
 
 def cobb_douglas_negotiation(agentX, agentY):
+    # Find the total amounts of each good:
     total_1 = agentX.good1 + agentY.good1
     total_2 = agentX.good2 + agentY.good2
+
+    # Each agent will accept no less of good1 than the amount
+    # where the contract curve intersects their starting
+    # indifference curve
     min_good1_x = math.sqrt(agentX.good1 * agentX.good2 * total_1 / total_2)
     min_good1_y = math.sqrt(agentY.good1 * agentY.good2 * total_1 / total_2)
     max_good1_x = total_1 - min_good1_y
+
+    # Bargaining power of an agent is that agent's share of the
+    # sum of the two agents' charisma scores.
     bargaining_power_x = agentX.charisma / (agentX.charisma + agentY.charisma)
 
+    # The amount of good1 up for negotiation is max_good1_x - min_good1_x.
+    # Each agent's bargaining power determines what share they will get.
     allocation_x1 = min_good1_x + bargaining_power_x * (max_good1_x - min_good1_x)
     allocation_y1 = total_1 - allocation_x1
     allocation_x2 = (total_2 / total_1) * allocation_x1

@@ -38,12 +38,13 @@ if __name__ == '__main__':
     print 'U(Y): ', Y.utility
     print '-' * 80
     '''
-    '''
+
     simulation.report(populations.random_agent,
                       transactions.cobb_douglas_competitive_eqbm,
                       interactions.anyone)
     '''
-    simulation.report(populations.random_charismatic_agent,
+    simulation.report(populations.random_bargaining_agent,
                       transactions.cobb_douglas_negotiation,
                       interactions.anyone)
                       #T=20*populations.N)
+    '''

@@ -37,7 +37,7 @@ def pareto(alpha=4):
     
     
 def normalize(numbers, total):
-    "Scale the numbers so that they add up to total."
+    """Scale the numbers so that they add up to total."""
     factor = total / float(sum(numbers))
     return [x * factor for x in numbers]
 
@@ -50,25 +50,26 @@ def random_agent(mu_e1=mu, mu_e2=mu, sigma_e1=mu/3, sigma_e2=mu/3,
     p2 = uniform(mu_p2, width_p2)
     return Agent(e1, e2, p1, p2)
 
-def random_charismatic_agent(mu_e1=mu, mu_e2=mu, sigma_e1=mu/3, sigma_e2=mu/3,
-                             mu_p1=0.5, mu_p2=0.5, width_p1=0.0, width_p2=0.0,
-                             mu_ch=0.5, width_ch=0.5):
+
+def random_bargaining_agent(mu_e1=mu, mu_e2=mu, sigma_e1=mu/3, sigma_e2=mu/3,
+                            mu_p1=0.5, mu_p2=0.5, width_p1=0.0, width_p2=0.0,
+                            mu_ch=0.5, width_ch=0.5):
     e1 = max(0, gauss(mu_e1, sigma_e1))
     e2 = max(0, gauss(mu_e2, sigma_e2))
     p1 = uniform(mu_p1, width_p1)
     p2 = uniform(mu_p2, width_p2)
     ch = uniform(mu_ch, width_ch)
-    return CharismaticAgent(e1, e2, p1, p2, ch)
+    return BargainingAgent(e1, e2, p1, p2, ch)
 
 
 class Agent(object):
     def __init__(self, endowment1, endowment2, preference1, preference2):
-        '''
+        """
         Agents are characterized by their allocations and preferences
         of goods 1 and 2. Economists usually call the starting value of
         a good an "endowment".
         The preference variables should be between 0 and 1.
-        '''
+        """
         self.good1 = max(0, endowment1)
         self.good2 = max(0, endowment2)
         self.pref1 = preference1
@@ -76,9 +77,9 @@ class Agent(object):
         
     @property
     def utility(self):
-        '''
+        """
         We'll use the Cobb-Douglas utility function for our model.
-        '''
+        """
         return pow(self.good1, self.pref1) * pow(self.good2, self.pref2)
 
     # The allocation property is just syntactic sugar that lets us assign
@@ -88,6 +89,12 @@ class Agent(object):
 
     @allocation.setter
     def allocation(self, values): self.good1, self.good2 = values
+
+    def demand(self, price):
+        alpha = self.pref1 / (self.pref1 + self.pref2)
+        quantity1 = alpha * (price * self.good1 + self.good2) / price
+        quantity2 = price * quantity1 * self.pref2 / self.pref1
+        return (quantity1, quantity2)
 
     # We need to define comparison operators in order to sort the
     # agents based on utility. I always prefer to define all of them
@@ -110,7 +117,7 @@ class Agent(object):
         return other + self.good1 + self.good2
 
 
-class CharismaticAgent(Agent):
+class BargainingAgent(Agent):
     def __init__(self, endowment1, endowment2, preference1, preference2, cha):
         Agent.__init__(self, endowment1, endowment2, preference1, preference2)
         self.charisma = cha
