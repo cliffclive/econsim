@@ -135,13 +135,13 @@ class BargainingAgent(Agent):
 
 
 def aggregate_demand(agents, max_price=10, steps=1000):
-    prices = (np.arange(max_price * steps) + 1) / float(steps)
+    prices = (np.arange(steps) + 1) * max_price / float(steps)
     quantities = [sum([a.demand(p)[0] - a.good1 for a in agents if a.demand(p)[0] > a.good1]) for p in prices]
     return dict(zip(prices, quantities))
 
 
 def aggregate_supply(agents, max_price=10, steps=1000):
-    prices = (np.arange(max_price * steps) + 1) / float(steps)
+    prices = (np.arange(steps) + 1) * max_price / float(steps)
     quantities = [sum([a.good1 - a.demand(p)[0] for a in agents if a.demand(p)[0] < a.good1]) for p in prices]
     return dict(zip(prices, quantities))
 
