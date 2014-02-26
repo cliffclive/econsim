@@ -1,10 +1,9 @@
-'''
+"""
 Created on Jan 22, 2014
 
 @author: Peter Norvig, Cliff Clive
-'''
+"""
 
-#import matplotlib
 import matplotlib.pyplot as plt
 
 import populations
@@ -13,15 +12,19 @@ import interactions
 
 
 def simulate(population, transaction_fn, interaction_fn, T, percentiles, record_every):
-    "Run simulation for T steps; collect percentiles every 'record_every' time steps."
+    """
+    Run simulation for T steps; collect percentiles every 'record_every' time steps.
+    """
     results = []
+    prices = []
     for t in range(T):
         i, j = interaction_fn(population)
         #population[i], population[j] = transaction_fn(population[i], population[j]) 
-        population[i].allocation, population[j].allocation = transaction_fn(population[i], population[j]) 
+        population[i].allocation, population[j].allocation, price_t = transaction_fn(population[i], population[j])
         if t % record_every == 0:
             results.append(record_percentiles(population, percentiles))
-    return results
+            prices.append(price_t)
+    return results, prices
 
 
 def report(distribution=populations.gauss, 
@@ -30,10 +33,11 @@ def report(distribution=populations.gauss,
            N=populations.N, mu=populations.mu, T=5*populations.N, 
            #percentiles=(1, 10, 25, 33.3, 50, -33.3, -25, -10, -1), record_every=25):
            percentiles=(1, 25, 50, -25, -1), record_every=25):
-    "Print and plot the results of the simulation running T steps."
+    """ Print and plot the results of the simulation running T steps. """
     # Run simulation
     population = populations.sample(distribution, N, mu)
-    results = simulate(population, transaction_fn, interaction_fn, T, percentiles, record_every)
+    eqbm_price = populations.find_market_equilibrium(population)[0]
+    results, prices = simulate(population, transaction_fn, interaction_fn, T, percentiles, record_every)
     # Print summary
     print('Simulation: {} * {}(mu={}) for T={} steps with {} doing {}:\n'.format(
           N, name(distribution), mu, T, name(interaction_fn), name(transaction_fn)))
@@ -43,17 +47,19 @@ def report(distribution=populations.gauss,
         print fmt.format(label, *nums)
     # Plot results
     col = 1.0
-    fig, axes = plt.subplots(1, 2)
+    fig, axes = plt.subplots(1, 3)
     for line in zip(*results):
         norm_line = [x/line[0] for x in line]
         axes[0].plot(line, color=(col, 0, 1-col))
         axes[1].plot(norm_line, color=(col, 0, 1-col))
         col *= 0.75
+    axes[2].plot(prices)
+    axes[2].plot([eqbm_price] * len(prices), 'g--')
     plt.show()
 
 
 def record_percentiles(population, percentiles):
-    "Pick out the percentiles from population."
+    """ Pick out the percentiles from population. """
     population = sorted(population, reverse=True)
     N = len(population)
     #return [population[int(p*N/100.)] for p in percentiles] 

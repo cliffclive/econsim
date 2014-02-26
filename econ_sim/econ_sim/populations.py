@@ -5,6 +5,7 @@ Created on Jan 22, 2014
 '''
 
 import random
+import numpy as np
 
 
 N  = 5000 # Default size of population
@@ -37,7 +38,7 @@ def pareto(alpha=4):
     
     
 def normalize(numbers, total):
-    """Scale the numbers so that they add up to total."""
+    """ Scale the numbers so that they add up to total. """
     factor = total / float(sum(numbers))
     return [x * factor for x in numbers]
 
@@ -131,3 +132,24 @@ class BargainingAgent(Agent):
     def __ge__(self, other): return self.charisma >= other
     def __le__(self, other): return self.charisma <= other
     def __ne__(self, other): return self.charisma != other
+
+
+def aggregate_demand(agents, max_price=10, steps=1000):
+    prices = (np.arange(max_price * steps) + 1) / float(steps)
+    quantities = [sum([a.demand(p)[0] - a.good1 for a in agents if a.demand(p)[0] > a.good1]) for p in prices]
+    return dict(zip(prices, quantities))
+
+
+def aggregate_supply(agents, max_price=10, steps=1000):
+    prices = (np.arange(max_price * steps) + 1) / float(steps)
+    quantities = [sum([a.good1 - a.demand(p)[0] for a in agents if a.demand(p)[0] < a.good1]) for p in prices]
+    return dict(zip(prices, quantities))
+
+
+def find_market_equilibrium(agents):
+    supply = aggregate_supply(agents)
+    demand = aggregate_demand(agents)
+    surplus = dict(zip(supply.keys(), [s - d for s, d in zip(supply.values(), demand.values())]))
+    equilibrium_price = [p for p in surplus if surplus[p] == 0][0]
+    equilibrium_quantity = supply[equilibrium_price]
+    return (equilibrium_price, equilibrium_quantity)

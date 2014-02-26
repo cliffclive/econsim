@@ -55,7 +55,7 @@ def cobb_douglas_competitive_eqbm(X, Y):
     allocation_x = X.demand(price)
     allocation_y = (total_1 - allocation_x[0], total_2 - allocation_x[1])
 
-    return (allocation_x, allocation_y)
+    return (allocation_x, allocation_y, price)
 
 
 def cobb_douglas_negotiation(agentX, agentY):
