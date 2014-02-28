@@ -134,22 +134,38 @@ class BargainingAgent(Agent):
     def __ne__(self, other): return self.charisma != other
 
 
-def aggregate_demand(agents, max_price=10, steps=1000):
+def aggregate_demand(agents, max_price=10, steps=100):
     prices = (np.arange(steps) + 1) * max_price / float(steps)
-    quantities = [sum([a.demand(p)[0] - a.good1 for a in agents if a.demand(p)[0] > a.good1]) for p in prices]
-    return dict(zip(prices, quantities))
+    result = {}
+    for price in prices:
+        quantity = 0
+        for a in agents:
+            if a.demand(price)[0] > a.good1:
+                quantity += a.demand(price)[0] - a.good1
+        result[price] = quantity
+    #quantities = [sum([a.demand(p)[0] - a.good1 for a in agents if a.demand(p)[0] > a.good1]) for p in prices]
+    #return dict(zip(prices, quantities))
+    return result
 
 
-def aggregate_supply(agents, max_price=10, steps=1000):
+def aggregate_supply(agents, max_price=10, steps=100):
     prices = (np.arange(steps) + 1) * max_price / float(steps)
-    quantities = [sum([a.good1 - a.demand(p)[0] for a in agents if a.demand(p)[0] < a.good1]) for p in prices]
-    return dict(zip(prices, quantities))
+    result = {}
+    for price in prices:
+        quantity = 0
+        for a in agents:
+            if a.demand(price)[0] < a.good1:
+                quantity += a.good1 - a.demand(price)[0]
+        result[price] = quantity
+    #quantities = [sum([a.good1 - a.demand(p)[0] for a in agents if a.demand(p)[0] < a.good1]) for p in prices]
+    #return dict(zip(prices, quantities))
+    return result
 
 
-def find_market_equilibrium(agents):
-    supply = aggregate_supply(agents)
-    demand = aggregate_demand(agents)
-    surplus = dict(zip(supply.keys(), [s - d for s, d in zip(supply.values(), demand.values())]))
-    equilibrium_price = [p for p in surplus if surplus[p] == 0][0]
+def find_market_equilibrium(supply, demand):
+    surplus = dict(zip(supply.keys(),
+                       [s - d for s, d in zip(supply.values(), demand.values())]))
+    min_surplus = np.min(np.abs(surplus.values()))
+    equilibrium_price = [p for p in surplus if abs(surplus[p]) == min_surplus][0]
     equilibrium_quantity = supply[equilibrium_price]
     return (equilibrium_price, equilibrium_quantity)

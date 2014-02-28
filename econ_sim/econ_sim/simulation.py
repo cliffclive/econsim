@@ -5,6 +5,7 @@ Created on Jan 22, 2014
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 import populations
 import transactions
@@ -35,9 +36,11 @@ def report(distribution=populations.gauss,
            percentiles=(1, 25, 50, -25, -1), record_every=25):
     """ Print and plot the results of the simulation running T steps. """
     # Run simulation
-    population = populations.sample(distribution, N, mu)
-    eqbm_price = populations.find_market_equilibrium(population)[0]
-    results, prices = simulate(population, transaction_fn, interaction_fn, T, percentiles, record_every)
+    pop = populations.sample(distribution, N, mu)
+    supply = populations.aggregate_supply(pop)
+    demand = populations.aggregate_demand(pop)
+    eqbm_price = populations.find_market_equilibrium(supply, demand)[0]
+    results, prices = simulate(pop, transaction_fn, interaction_fn, T, percentiles, record_every)
     # Print summary
     print('Simulation: {} * {}(mu={}) for T={} steps with {} doing {}:\n'.format(
           N, name(distribution), mu, T, name(interaction_fn), name(transaction_fn)))
@@ -47,14 +50,24 @@ def report(distribution=populations.gauss,
         print fmt.format(label, *nums)
     # Plot results
     col = 1.0
-    fig, axes = plt.subplots(1, 3)
+    fig, axes = plt.subplots(1, 2)
+    '''
     for line in zip(*results):
         norm_line = [x/line[0] for x in line]
         axes[0].plot(line, color=(col, 0, 1-col))
         axes[1].plot(norm_line, color=(col, 0, 1-col))
         col *= 0.75
-    axes[2].plot(prices)
-    axes[2].plot([eqbm_price] * len(prices), 'g--')
+    '''
+    axes[0].scatter(np.array(demand.values())/1000., demand.keys(), c='g')
+    axes[0].scatter(np.array(supply.values())/1000., supply.keys())
+    axes[0].plot([eqbm_price] * len(prices), 'r')
+    axes[0].set_xlim(0, 100)
+    axes[0].set_ylim(0, 5)
+
+    axes[1].plot(prices)
+    axes[1].plot([eqbm_price] * len(prices), 'r')
+    axes[1].set_ylim(0, 5)
+
     plt.show()
 
 
